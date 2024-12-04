@@ -278,7 +278,7 @@ function getTabbableElements(): HTMLElement[] {
 }
 
 // Select all the children of an atom, or a branch
-function select(
+export function select(
   model: _Model,
   target: Atom | Readonly<Atom[]>,
   direction: 'backward' | 'forward' = 'forward'

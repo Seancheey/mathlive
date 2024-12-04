@@ -136,6 +136,7 @@ import { parseMathString } from 'formats/parse-math-string';
 import { TextAtom } from 'atoms/text';
 import { getLatexGroup } from './mode-editor-latex';
 import { MenuItem } from 'public/ui-menu-types';
+import { select } from 'editor-model/commands-move';
 
 const DEFAULT_KEYBOARD_TOGGLE_GLYPH = `<svg xmlns="http://www.w3.org/2000/svg" style="width: 21px;"  viewBox="0 0 576 512" role="img" aria-label="${localize(
   'tooltip.toggle virtual keyboard'
@@ -1104,6 +1105,24 @@ If you are using Vue, this may be because you are using the runtime-only build o
 
     if (s.length === 0 && this.model.selectionIsCollapsed) return false;
 
+    if (!this.isSelectionEditable) {
+      if (this.hasEditablePrompts) {
+        console.warn(
+          'Current selection is not editable. Switching the focus to an editable prompt.'
+        );
+        // If the selection is in a prompt, change model to focus on the prompt
+        const promptAtom = this.model.findAtom(
+          (a: Atom) => a.type === 'prompt' && !(a as PromptAtom).locked
+        );
+        if (promptAtom) select(this.model, promptAtom.children);
+        else console.error('Selection is not editable');
+      } else {
+        // If the selection is not in a prompt, but the mathfield is read-only,
+        // ignore the input
+        return false;
+      }
+    }
+
     // This code path is used when inserting content from the virtual keyboard
     // (i.e. inserting `\sin`). We need to ignore previous key combinations
     // in this case
@@ -1665,8 +1684,12 @@ If you are using Vue, this may be because you are using the runtime-only build o
     if (
       this.hasEditablePrompts &&
       !this.model.at(this.model.anchor).parentPrompt
-    )
-      this.executeCommand('moveToNextPlaceholder');
+    ) {
+      const prompt = this.model.findAtom(
+        (a) => a.type === 'prompt' && !(a as PromptAtom).locked
+      );
+      if (prompt) select(this.model, prompt.children);
+    }
 
     this.focusBlurInProgress = false;
   }
