@@ -7398,7 +7398,8 @@ Return the id of the prompts matching the filter.
 setPromptState(
    id, 
    state, 
-   locked?): void
+   locked?, 
+   size?): void
 ```
 
 • **id**: `string`
@@ -7406,6 +7407,12 @@ setPromptState(
 • **state**: `"undefined"` \| `"correct"` \| `"incorrect"`
 
 • **locked?**: `boolean`
+
+• **size?**
+
+• **size.minHeight?**: `number`
+
+• **size.minWidth?**: `number`
 
 `void`
 

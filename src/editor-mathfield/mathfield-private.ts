@@ -1472,7 +1472,8 @@ If you are using Vue, this may be because you are using the runtime-only build o
   setPromptState(
     id: string,
     state: 'correct' | 'incorrect' | 'undefined' | undefined,
-    locked?: boolean
+    locked?: boolean,
+    size?: { minWidth?: number; minHeight?: number }
   ): void {
     const prompt = this.getPrompt(id);
     if (!prompt) {
@@ -1486,6 +1487,9 @@ If you are using Vue, this may be because you are using the runtime-only build o
       prompt.locked = locked;
       prompt.captureSelection = locked;
     }
+
+    if (size?.minWidth !== undefined) prompt.minWidth = size.minWidth;
+    if (size?.minHeight !== undefined) prompt.minHeight = size.minHeight;
 
     requestUpdate(this);
   }

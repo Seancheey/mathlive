@@ -10,6 +10,9 @@ export class PromptAtom extends Atom {
   readonly placeholderId?: string;
   correctness: 'correct' | 'incorrect' | undefined;
   locked: boolean;
+  minWidth?: number;
+  minHeight?: number;
+
   constructor(
     placeholderId?: string,
     correctness?: 'correct' | 'incorrect' | undefined,
@@ -113,6 +116,23 @@ export class PromptAtom extends Atom {
       classes: boxClasses,
       attributes: { part: 'prompt' },
     });
+    if (
+      this.minWidth &&
+      (!this.body || this.body.length === 1 || base.width < this.minWidth)
+    )
+      base.width = this.minWidth;
+
+    if (
+      this.minHeight &&
+      (!this.body ||
+        this.body.length === 1 ||
+        base.height + base.depth < this.minHeight)
+    ) {
+      const depth = (this.minHeight - 2 * vPadding + 2 / 16) / 2;
+      base.height = this.minHeight - depth;
+      base.depth = depth;
+    }
+
     box.height = base.height + vPadding;
     box.depth = base.depth + vPadding;
     box.width = base.width + 2 * hPadding;
@@ -129,7 +149,7 @@ export class PromptAtom extends Atom {
       box.setStyle('left', -hPadding, 'em');
     }
     // empty prompt should be a little wider
-    if (!this.body || this.body.length === 1) {
+    if ((!this.body || this.body.length === 1) && !this.minWidth) {
       box.width = 3 * hPadding;
       box.setStyle('width', `calc(100% + ${3 * hPadding}em)`);
       box.setStyle('left', -1.5 * hPadding, 'em');

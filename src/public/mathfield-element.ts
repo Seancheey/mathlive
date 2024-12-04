@@ -2747,9 +2747,10 @@ mf.macros = {
   setPromptState(
     id: string,
     state: 'correct' | 'incorrect' | 'undefined' | undefined,
-    locked?: boolean
+    locked?: boolean,
+    size?: { minWidth?: number; minHeight?: number }
   ): void {
-    this._mathfield?.setPromptState(id, state, locked);
+    this._mathfield?.setPromptState(id, state, locked, size);
   }
   getPromptState(id: string): ['correct' | 'incorrect' | undefined, boolean] {
     return this._mathfield?.getPromptState(id) ?? [undefined, true];
