@@ -44,6 +44,7 @@ export class VirtualKeyboard implements VirtualKeyboardInterface, EventTarget {
   private _rebuilding: boolean;
   private readonly observer: ResizeObserver;
   private originalContainerBottomPadding: string | null = null;
+  private fixedHeight: number | undefined;
 
   private connectedMathfieldWindow: Window | undefined;
   private readonly listeners: {
@@ -349,7 +350,12 @@ export class VirtualKeyboard implements VirtualKeyboardInterface, EventTarget {
   adjustBoundingRect(): void {
     // Adjust the keyboard height
     const h = this.boundingRect.height;
-    if (this.container === document.body) {
+    if (this.fixedHeight) {
+      this._element?.style.setProperty(
+        '--_keyboard-height',
+        `${this.fixedHeight}px`
+      );
+    } else if (this.container === document.body) {
       this._element?.style.setProperty(
         '--_keyboard-height',
         `calc(${h}px + var(--_padding-top) + var(--_padding-bottom) + env(safe-area-inset-bottom, 0))`
@@ -428,7 +434,9 @@ export class VirtualKeyboard implements VirtualKeyboardInterface, EventTarget {
     }
   }
 
-  show(options?: { animate: boolean }): void {
+  show(options?: { animate: boolean; fixedHeight?: number }): void {
+    if (options?.fixedHeight) this.fixedHeight = options.fixedHeight;
+    else this.fixedHeight = undefined;
     if (this._visible) return;
 
     const container = this.container;
