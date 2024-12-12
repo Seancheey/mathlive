@@ -1688,7 +1688,10 @@ If you are using Vue, this may be because you are using the runtime-only build o
       const prompt = this.model.findAtom(
         (a) => a.type === 'prompt' && !(a as PromptAtom).locked
       );
-      if (prompt) select(this.model, prompt.children);
+      if (prompt) {
+        select(this.model, prompt.children);
+        requestUpdate(this);
+      }
     }
 
     this.focusBlurInProgress = false;
